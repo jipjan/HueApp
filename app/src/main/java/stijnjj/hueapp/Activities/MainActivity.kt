@@ -30,6 +30,10 @@ class MainActivity : AppCompatActivity() {
                 Log.d("groups", group.name)
             }
         }
+
+        api.getInfoLight(2, {
+            Log.d("light", it.name)
+        })
     }
 
 }

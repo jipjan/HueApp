@@ -29,14 +29,18 @@ class HueApi(c: Context) {
     }
 
     fun getLights(onDone: (lights: ArrayList<Light>) -> Unit) {
-        getCall("lights", onDone)
+        getListCall("lights", onDone)
     }
 
     fun getGroups(onDone: (lights: ArrayList<Group>) -> Unit) {
-        getCall("groups", onDone)
+        getListCall("groups", onDone)
     }
 
-    private inline fun <reified TResponse> getCall(subDir: String, crossinline onDone: (lights: ArrayList<TResponse>) -> Unit) {
+    fun getInfoLight(id: Int, onDone: (light: Light) -> Unit) {
+        getSingleCall("lights/" + id, onDone)
+    }
+
+    private inline fun <reified TResponse> getListCall(subDir: String, crossinline onDone: (lights: ArrayList<TResponse>) -> Unit) {
         var url = makeUrl(subDir)
         var request = JsonObjectRequest(Request.Method.GET, url, null, Response.Listener<JSONObject> {
             response ->
@@ -48,6 +52,19 @@ class HueApi(c: Context) {
                 lights.add(gson.fromJson(str.toString(), TResponse::class.java))
             }
             onDone(lights)
+        }, Response.ErrorListener {
+            response ->
+            Log.d("API", "Failed")
+        })
+        _queue.add(request)
+    }
+
+    private inline fun <reified TResponse> getSingleCall(subDir: String, crossinline onDone: (item: TResponse) -> Unit) {
+        var url = makeUrl(subDir)
+        var request = JsonObjectRequest(Request.Method.GET, url, null, Response.Listener<JSONObject> {
+            response ->
+            val gson = GsonBuilder().create()
+            onDone(gson.fromJson(response.toString(), TResponse::class.java))
         }, Response.ErrorListener {
             response ->
             Log.d("API", "Failed")
