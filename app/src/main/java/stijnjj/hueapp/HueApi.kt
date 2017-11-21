@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder
 import org.json.JSONObject
 import stijnjj.hueapp.Json.GroupClasses.Group
 import stijnjj.hueapp.Json.LightClasses.Light
+import stijnjj.hueapp.Json.LightClasses.LightSettings
 import kotlin.jvm.javaClass
 
 /**
@@ -40,6 +41,10 @@ class HueApi(c: Context) {
         getSingleCall("lights/" + id, onDone)
     }
 
+    fun setLightState(id: Int, settings: LightSettings) {
+        putCall("lights/$id/state", settings)
+    }
+
     private inline fun <reified TResponse> getListCall(subDir: String, crossinline onDone: (lights: ArrayList<TResponse>) -> Unit) {
         var url = makeUrl(subDir)
         var request = JsonObjectRequest(Request.Method.GET, url, null, Response.Listener<JSONObject> {
@@ -65,6 +70,20 @@ class HueApi(c: Context) {
             response ->
             val gson = GsonBuilder().create()
             onDone(gson.fromJson(response.toString(), TResponse::class.java))
+        }, Response.ErrorListener {
+            response ->
+            Log.d("API", "Failed")
+        })
+        _queue.add(request)
+    }
+
+    private inline fun <reified TPut> putCall(subDir: String, settings: TPut) {
+        var url = makeUrl(subDir)
+        val gson = GsonBuilder().create()
+        val json = gson.toJson(settings)
+        var request = JsonObjectRequest(Request.Method.PUT, url, JSONObject(json) , Response.Listener<JSONObject> {
+            response ->
+            Log.d("API", "Success")
         }, Response.ErrorListener {
             response ->
             Log.d("API", "Failed")

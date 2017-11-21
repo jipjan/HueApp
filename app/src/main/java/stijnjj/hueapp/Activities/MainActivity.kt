@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import stijnjj.hueapp.HueApi
+import stijnjj.hueapp.Json.LightClasses.LightSettings
 
 import stijnjj.hueapp.R
 
@@ -34,6 +35,10 @@ class MainActivity : AppCompatActivity() {
         api.getInfoLight(2, {
             Log.d("light", it.name)
         })
+
+        var settings = LightSettings()
+        settings.isOn = false
+        api.setLightState(2, settings)
     }
 
 }
