@@ -76,11 +76,13 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val 
                         }
 
                         override fun onColorChanged(color: Int) {
-                            var hsv = floatArrayOf(0f,0f,0f)
+                            val hsv = floatArrayOf(0f,0f,0f)
                             Color.colorToHSV(color, hsv)
                             lightSettings.hue = (hsv[0] / 360 * 65535).toInt()
                             lightSettings.saturation = (hsv[1] * 254).toInt()
                             lightSettings.brightness = (hsv[2] * 254).toInt()
+                            colorButton.setColorFilter(color)
+
                             if (shouldBeUpdated) {
                                 api.setLightState(childPos, lightSettings)
 //                                println("update = false")
