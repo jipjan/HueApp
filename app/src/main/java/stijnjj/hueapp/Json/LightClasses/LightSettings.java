@@ -8,6 +8,15 @@ public class LightSettings {
     private boolean on;
     private int bri, hue, sat;
 
+    public LightSettings(boolean on, int hue, int sat, int bri) {
+        this.on = on;
+        this.bri = bri;
+        this.hue = hue;
+        this.sat = sat;
+    }
+
+    public LightSettings(){}
+
     public boolean isOn() {
         return on;
     }
