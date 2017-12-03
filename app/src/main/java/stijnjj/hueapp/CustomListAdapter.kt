@@ -26,7 +26,7 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val 
 
     override fun getGroup(p0: Int): Any = groups[p0]
 
-    override fun getChild(p0: Int, p1: Int): Any = lights[groups[p0].lights[p1].toInt()]
+    override fun getChild(p0: Int, p1: Int): Any = lights[groups[p0].lights[p1].toInt() - 1]
 
     override fun getGroupId(p0: Int): Long = p0.toLong()
 
@@ -40,22 +40,24 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val 
         val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         newView = layoutInflater.inflate(R.layout.list_detail, parent, false)
         val light = getChild(groupPos, childPos) as Light
+        println(((light.state.hue.toFloat() / 65535) * 360))
+        println(light.state.hue)
+        var lightColor = Color.HSVToColor(floatArrayOf(((light.state.hue.toFloat() / 65535) * 360), (light.state.sat.toFloat() / 254), (light.state.bri / 254).toFloat()))
 
         val switch = newView.findViewById<Switch>(R.id.switchOn)
         switch.isChecked = light.state.on
         switch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             light.state.on = isChecked
-            api.setLightState(childPos, LightSettings(light.state.on, light.state.hue, light.state.sat, light.state.bri))
+            api.setLightState(groups[groupPos].lights[childPos].toInt(), LightSettings(light.state.on, light.state.hue, light.state.sat, light.state.bri))
         })
 
         val text = newView.findViewById<TextView>(R.id.txtLightName)
         text.text = light.name
 
         val colorButton = newView.findViewById<ImageView>(R.id.lightColorBtn)
-        val btnColor = Color.HSVToColor(floatArrayOf((light.state.hue / 65535 * 360).toFloat(), (light.state.sat / 254).toFloat(), (light.state.bri / 254).toFloat()))
-        colorButton.setColorFilter(btnColor)
+        colorButton.setColorFilter(lightColor)
         colorButton.setOnClickListener {
-            val dialog = ColorPickerDialog(context, btnColor, false)
+            val dialog = ColorPickerDialog(context, lightColor, false)
             var dialogId = dialog.show()
             SetColorPickerListenerEvent.setListener(dialogId,
                     object : ColorPickerListener {
@@ -78,13 +80,18 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val 
                         override fun onColorChanged(color: Int) {
                             val hsv = floatArrayOf(0f,0f,0f)
                             Color.colorToHSV(color, hsv)
+
                             lightSettings.hue = (hsv[0] / 360 * 65535).toInt()
                             lightSettings.saturation = (hsv[1] * 254).toInt()
                             lightSettings.brightness = (hsv[2] * 254).toInt()
-                            colorButton.setColorFilter(color)
+                            lightColor = color
 
                             if (shouldBeUpdated) {
-                                api.setLightState(childPos, lightSettings)
+                                api.setLightState(groups[groupPos].lights[childPos].toInt(), lightSettings)
+                                light.state.setHue((hsv[0] / 360 * 65535).toInt())
+                                light.state.setSat((hsv[1] * 254).toInt())
+                                light.state.setBri((hsv[2] * 254).toInt())
+                                colorButton.setColorFilter(color)
 //                                println("update = false")
                                 shouldBeUpdated = false
                             }
@@ -94,7 +101,7 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val 
                             scheduledTask.shutdown()
                             shouldBeUpdated = true
                             dialogId = -1
-                            notifyDataSetChanged()
+                         //   notifyDataSetChanged()
                         }
                     }
             )
