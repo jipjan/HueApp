@@ -20,13 +20,13 @@ import android.widget.CompoundButton
 import stijnjj.hueapp.Json.LightClasses.LightSettings
 
 
-class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val lights: ArrayList<Light>, val resources: Resources, val api: HueApi) : BaseExpandableListAdapter() {
+class CustomListAdapter(val context: Context, val groups: ArrayList<LightGroup>, val resources: Resources, val api: HueApi) : BaseExpandableListAdapter() {
 
     override fun getChildrenCount(p0: Int) = groups[p0].lights.size
 
     override fun getGroup(p0: Int): Any = groups[p0]
 
-    override fun getChild(p0: Int, p1: Int): Any = lights[groups[p0].lights[p1].toInt() - 1]
+    override fun getChild(p0: Int, p1: Int): Any = groups[p0].lights[p1]
 
     override fun getGroupId(p0: Int): Long = p0.toLong()
 
@@ -39,20 +39,20 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val 
         val newView: View
         val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         newView = layoutInflater.inflate(R.layout.list_detail, parent, false)
-        val light = getChild(groupPos, childPos) as Light
-        println(((light.state.hue.toFloat() / 65535) * 360))
-        println(light.state.hue)
-        var lightColor = Color.HSVToColor(floatArrayOf(((light.state.hue.toFloat() / 65535) * 360), (light.state.sat.toFloat() / 254), (light.state.bri / 254).toFloat()))
+        val light = getChild(groupPos, childPos) as LightWithId
+        println(((light.light.state.hue.toFloat() / 65535) * 360))
+        println(light.light.state.hue)
+        var lightColor = Color.HSVToColor(floatArrayOf(((light.light.state.hue.toFloat() / 65535) * 360), (light.light.state.sat.toFloat() / 254), (light.light.state.bri / 254).toFloat()))
 
         val switch = newView.findViewById<Switch>(R.id.switchOn)
-        switch.isChecked = light.state.on
+        switch.isChecked = light.light.state.on
         switch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            light.state.on = isChecked
-            api.setLightState(groups[groupPos].lights[childPos].toInt(), LightSettings(light.state.on, light.state.hue, light.state.sat, light.state.bri))
+            light.light.state.on = isChecked
+            api.setLightState(light.id!!, LightSettings(light.light.state.on, light.light.state.hue, light.light.state.sat, light.light.state.bri))
         })
 
         val text = newView.findViewById<TextView>(R.id.txtLightName)
-        text.text = light.name
+        text.text = light.light.name
 
         val colorButton = newView.findViewById<ImageView>(R.id.lightColorBtn)
         colorButton.setColorFilter(lightColor)
@@ -74,7 +74,7 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val 
                         init{
                             scheduledTask.scheduleAtFixedRate(task, 0, 500, TimeUnit.MILLISECONDS)
                             lightSettings = LightSettings()
-                            lightSettings.isOn = light.state.on
+                            lightSettings.isOn = light.light.state.on
                         }
 
                         override fun onColorChanged(color: Int) {
@@ -87,10 +87,10 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val 
                             lightColor = color
 
                             if (shouldBeUpdated) {
-                                api.setLightState(groups[groupPos].lights[childPos].toInt(), lightSettings)
-                                light.state.setHue((hsv[0] / 360 * 65535).toInt())
-                                light.state.setSat((hsv[1] * 254).toInt())
-                                light.state.setBri((hsv[2] * 254).toInt())
+                                api.setLightState(light.id!!, lightSettings)
+                                light.light.state.setHue((hsv[0] / 360 * 65535).toInt())
+                                light.light.state.setSat((hsv[1] * 254).toInt())
+                                light.light.state.setBri((hsv[2] * 254).toInt())
                                 colorButton.setColorFilter(color)
 //                                println("update = false")
                                 shouldBeUpdated = false
@@ -112,7 +112,7 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Group>, val 
     override fun getChildId(p0: Int, p1: Int): Long = p1.toLong()
 
     override fun getGroupView(p0: Int, p1: Boolean, p2: View?, p3: ViewGroup?): View? {
-        val title = groups[p0].name
+        val title = groups[p0].groupName
         var newView = p2
 
         if (p2 == null) {
