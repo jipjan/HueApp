@@ -45,6 +45,10 @@ class HueApi(c: Context) {
         putCall("lights/$id/state", settings)
     }
 
+    fun setGroupState(id: Int, settings: LightSettings) {
+        putCall("groups/$id/action", settings)
+    }
+
     private inline fun <reified TResponse> getListCall(subDir: String, crossinline onDone: (lights: ArrayList<TResponse>) -> Unit) {
         var url = makeUrl(subDir)
         var request = JsonObjectRequest(Request.Method.GET, url, null, Response.Listener<JSONObject> {
