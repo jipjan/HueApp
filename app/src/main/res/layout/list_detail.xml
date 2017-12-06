@@ -23,9 +23,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/switchOn"
+        app:layout_constraintBottom_toBottomOf="@+id/switchOnLight"
         app:layout_constraintStart_toEndOf="@+id/textView4"
-        app:layout_constraintTop_toTopOf="@+id/switchOn"
+        app:layout_constraintTop_toTopOf="@+id/switchOnLight"
         app:layout_constraintVertical_bias="0.538"
         app:srcCompat="@drawable/led_button" />
 
@@ -38,12 +38,12 @@
         android:layout_marginTop="8dp"
         android:text="@string/color"
         app:layout_constraintBottom_toBottomOf="@+id/lightColorBtn"
-        app:layout_constraintStart_toEndOf="@+id/switchOn"
+        app:layout_constraintStart_toEndOf="@+id/switchOnLight"
         app:layout_constraintTop_toTopOf="@+id/lightColorBtn"
         app:layout_constraintVertical_bias="0.6" />
 
     <Switch
-        android:id="@+id/switchOn"
+        android:id="@+id/switchOnLight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

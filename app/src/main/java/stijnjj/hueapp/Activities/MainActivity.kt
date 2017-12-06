@@ -1,14 +1,10 @@
 package stijnjj.hueapp.Activities
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.ExpandableListView
 import stijnjj.hueapp.*
 import stijnjj.hueapp.Json.GroupClasses.Group
-import stijnjj.hueapp.Json.LightClasses.Light
-import stijnjj.hueapp.Json.LightClasses.LightSettings
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,9 +17,9 @@ class MainActivity : AppCompatActivity() {
         */
 
         var groups = ArrayList<Group>()
-        var lightGroups = ArrayList<LightGroup>()
+        val lightGroups = HashMap<Group, ArrayList<LightWithId>>()
 
-        var api = HueApi(this)
+        val api = HueApi(this)
         api.getGroups {
             // 'it' bevat de lights
             groups = it
@@ -36,8 +32,7 @@ class MainActivity : AppCompatActivity() {
                         lights.add(light)
                     }
                 }
-                lightGroups.add(LightGroup(group.name, lights))
-
+                lightGroups.put(group, lights)
             }
             val list = findViewById<ExpandableListView>(R.id.expandedList)
             list.deferNotifyDataSetChanged()
