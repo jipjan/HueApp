@@ -16,43 +16,35 @@ class MainActivity : AppCompatActivity() {
         api.getLights({})
         */
 
-        var groups = ArrayList<Group>()
-        val lightGroups = HashMap<Group, ArrayList<LightWithId>>()
+        var groups: ArrayList<Group>
+
+        val lightGroups = ArrayList<Pair<GroupWithId, ArrayList<LightWithId>>>()
 
         val api = HueApi(this)
         api.getGroups {
-            // 'it' bevat de lights
             groups = it
-            for (group in groups) {
-                val lights = ArrayList<LightWithId>()
-                for (s in group.lights){
-                    api.getInfoLight(s.toInt()){
-                        val light = LightWithId(s.toInt(), it)
 
-                        lights.add(light)
+            for (i in 1..groups.size) {
+                api.getGroupInfo(i) {
+                    val group = GroupWithId(i, it)
+                    val lights = ArrayList<LightWithId>()
+                    for (s in group.group.lights) {
+                        api.getInfoLight(s.toInt()) {
+                            val light = LightWithId(s.toInt(), it)
+                            println(it.name)
+                            lights.add(light)
+                        }
                     }
+                    waitTillListIsFilled(groups.size, lightGroups, Pair(group, lights), api)
                 }
-                lightGroups.put(group, lights)
             }
-            val list = findViewById<ExpandableListView>(R.id.expandedList)
-            list.deferNotifyDataSetChanged()
-            list.setAdapter(CustomListAdapter(this, lightGroups, resources, api))
         }
-
-
-//        api.getInfoLight(2, {
-//            Log.d("light", it.name)
-//        })
-
-
-
-
-
-
-
-//        var settings = LightSettings()
-//        settings.isOn = false
-//        api.setLightState(2, settings)
     }
-
+    fun waitTillListIsFilled(numElements: Int, list: ArrayList<Pair<GroupWithId, ArrayList<LightWithId>>>, newElement: Pair<GroupWithId, ArrayList<LightWithId>>, api: HueApi){
+        list.add(newElement)
+        if (list.size == numElements){
+            val listView = findViewById<ExpandableListView>(R.id.expandedList)
+            listView.setAdapter(CustomListAdapter(this, list, resources, api))
+        }
+    }
 }

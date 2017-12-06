@@ -11,6 +11,7 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.GsonBuilder
 import org.json.JSONObject
 import stijnjj.hueapp.Json.GroupClasses.Group
+import stijnjj.hueapp.Json.GroupClasses.SingleGroup
 import stijnjj.hueapp.Json.LightClasses.Light
 import stijnjj.hueapp.Json.LightClasses.LightSettings
 import kotlin.jvm.javaClass
@@ -35,6 +36,10 @@ class HueApi(c: Context) {
 
     fun getGroups(onDone: (lights: ArrayList<Group>) -> Unit) {
         getListCall("groups", onDone)
+    }
+
+    fun getGroupInfo(id: Int, onDone: (group: SingleGroup) -> Unit) {
+        getSingleCall("groups/" + id, onDone)
     }
 
     fun getInfoLight(id: Int, onDone: (light: Light) -> Unit) {
