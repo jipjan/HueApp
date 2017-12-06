@@ -1,14 +1,17 @@
 package stijnjj.hueapp.Json.LightClasses;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Created by Jaap-Jan on 21-11-2017.
  */
 
 public class LightSettings {
     private boolean on;
-    private int bri, hue, sat;
+    @Nullable
+    private Integer bri, hue, sat;
 
-    public LightSettings(boolean on, int hue, int sat, int bri) {
+    public LightSettings(boolean on, @Nullable Integer hue, @Nullable Integer sat, @Nullable Integer bri) {
         this.on = on;
         this.bri = bri;
         this.hue = hue;

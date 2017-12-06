@@ -56,7 +56,7 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Pair<GroupWi
         switch.isChecked = light.light.state.on
         switch.setOnCheckedChangeListener({ _, isChecked ->
             light.light.state.on = isChecked
-            api.setLightState(light.id, LightSettings(light.light.state.on, light.light.state.hue, light.light.state.sat, light.light.state.bri))
+            api.setLightState(light.id, LightSettings(light.light.state.on, null, null, null))
         })
 
         val text = newView.findViewById<TextView>(R.id.txtLightName)
@@ -140,7 +140,7 @@ class CustomListAdapter(val context: Context, val groups: ArrayList<Pair<GroupWi
             switch.isChecked = action.on
             switch.setOnCheckedChangeListener({ _, isChecked ->
                 action.on = isChecked
-                api.setGroupState(group.id, LightSettings(action.on, action.hue, action.sat, action.bri))
+                api.setGroupState(group.id, LightSettings(action.on, null, null, null))
                 for (l in getChildren(groupPosition)){
                     l.light.state.on = isChecked
                     notifyDataSetChanged()
