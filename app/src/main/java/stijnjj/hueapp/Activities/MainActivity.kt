@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         api.getGroups {
             groups = it
 
-            for (i in 1..groups.size) {
+            for (i in 0..groups.size) {
                 api.getGroupInfo(i) {
                     val group = GroupWithId(i, it)
                     val lights = ArrayList<LightWithId>()
