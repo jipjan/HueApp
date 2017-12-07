@@ -22,19 +22,19 @@ import android.widget.ExpandableListView
 
 
 
-class CustomListAdapter(val context: Context, val groups: ArrayList<Pair<GroupWithId, ArrayList<LightWithId>>>, val resources: Resources, val api: HueApi) : BaseExpandableListAdapter() {
+class CustomListAdapter(val context: Context, val groups: ArrayList<ExpandableGroup>, val resources: Resources, val api: HueApi) : BaseExpandableListAdapter() {
 
     init {
         //println(groups[getGroup(0)]!!.size)
     }
 
-    override fun getChildrenCount(p0: Int) = groups[p0].second.size
+    override fun getChildrenCount(p0: Int) = groups[p0].lights.size
 
-    override fun getGroup(p0: Int): GroupWithId = groups[p0].first
+    override fun getGroup(p0: Int): GroupWithId = groups[p0].getGroup()
 
-    override fun getChild(p0: Int, p1: Int): LightWithId = groups[p0].second[p1]
+    override fun getChild(p0: Int, p1: Int): LightWithId = groups[p0].lights[p1]
 
-    fun getChildren(p0: Int): ArrayList<LightWithId> = groups[p0].second
+    fun getChildren(p0: Int): ArrayList<LightWithId> = groups[p0].lights
 
     override fun getGroupId(p0: Int): Long = p0.toLong()
 
