@@ -5,5 +5,5 @@
     <string name="username">Username</string>
     <string name="port">Port</string>
     <string name="color">Color</string>
-    <string name="on_off">On/Off</string>
+    <string name="on_off">Off/On</string>
 </resources>

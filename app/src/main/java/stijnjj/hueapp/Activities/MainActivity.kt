@@ -51,9 +51,9 @@ class MainActivity : AppCompatActivity() {
             var singlegrp = SingleGroup()
             singlegrp.name = "All lights"
             singlegrp.action = AdvancedAction()
-            singlegrp.action.hue = 0
-            singlegrp.action.bri = 0
-            singlegrp.action.sat = 0
+            singlegrp.action.hue = 254
+            singlegrp.action.bri = 254
+            singlegrp.action.sat = 254
             singlegrp.action.on = true
             val grp = GroupWithId(0, singlegrp)
             val newlights = ArrayList<LightWithId>()
